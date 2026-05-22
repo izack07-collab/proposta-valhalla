@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Proposta — Valhalla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --card: #f8f8fb;
+    --card-hover: #f1f1f6;
+    --border: #e5e5ed;
+    --border-strong: #d4d4dc;
+    --text: #0a0a0f;
+    --text-dim: #5a5a6e;
+    --text-faint: #8a8a9a;
+    --accent: #7c3aed;
+    --accent-soft: rgba(124, 58, 237, 0.08);
+    --accent-line: rgba(124, 58, 237, 0.28);
+    --cyan: #0891b2;
+    --success: #16a34a;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  html { scroll-behavior: smooth; }
+
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: #ffffff !important; }
+    .wrap { padding: 0; max-width: 100%; }
+    /* só protege blocos pequenos — section grande pode quebrar entre cards */
+    .fase, .conta, .prova, .port-link, .crm-prova { break-inside: avoid; page-break-inside: avoid; }
+    .crm-prova figcaption { break-before: avoid; page-break-before: avoid; }
+    .header { margin-bottom: 20px; padding-bottom: 12px; }
+    .intro { margin-bottom: 24px; }
+    .intro h1 { font-size: 32px; }
+    section { margin-bottom: 24px; }
+    h2 { margin-bottom: 16px; break-after: avoid; page-break-after: avoid; }
+    .section-label { margin-bottom: 12px; }
+    .fase { margin-bottom: 10px; padding: 18px 22px; }
+    .fase ul { gap: 6px; }
+    .crm-prova { margin-top: 14px; }
+    .conta { padding: 20px; }
+    .versus { gap: 12px; }
+    .prova:hover, .fase:hover, .port-link:hover { transform: none !important; }
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 56px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header .brand {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .header .meta {
+    font-size: 13px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* INTRO mínima */
+  .intro { margin-bottom: 72px; }
+  .intro h1 {
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .intro h1 .accent { color: var(--accent); }
+  .intro p {
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 560px;
+  }
+
+  /* SECTION */
+  section { margin-bottom: 72px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--border-strong);
+  }
+  h2 {
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+    line-height: 1.25;
+  }
+
+  /* PROVAS */
+  .provas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 600px) {
+    .provas { grid-template-columns: 1fr; }
+  }
+  .prova {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .prova:hover { border-color: var(--accent-line); transform: translateY(-2px); }
+  .prova-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .prova h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .prova p {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .prova a {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--accent-line);
+    padding-bottom: 2px;
+    transition: color 0.2s;
+  }
+  .prova a:hover { color: #c084fc; }
+  .prova .shot {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #0a0a0f;
+    border: 1px dashed var(--border-strong);
+    border-radius: 8px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-faint);
+    font-size: 12px;
+    overflow: hidden;
+  }
+  .prova .shot img { width: 100%; height: 100%; object-fit: cover; }
+
+  .prova-recipe {
+    margin-top: 20px;
+    background: var(--card);
+    border: 1px dashed var(--border-strong);
+    border-radius: 12px;
+    padding: 18px 22px;
+    color: var(--text-dim);
+    font-size: 15px;
+    text-align: center;
+  }
+  .prova-recipe strong { color: var(--text); }
+
+  /* FASES */
+  .fase {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 28px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .fase:hover { border-color: var(--border-strong); }
+  .fase-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .fase-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .fase-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .fase-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    text-align: right;
+  }
+  .fase-price .small {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-weight: 500;
+    display: block;
+    margin-top: 2px;
+  }
+  .fase ul {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+  .fase ul li {
+    font-size: 14.5px;
+    color: var(--text-dim);
+    padding-left: 22px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .fase ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--text-faint);
+  }
+  .fase ul li strong { color: var(--text); font-weight: 600; }
+
+  /* COMBO destaque */
+  .fase.combo {
+    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--card) 70%);
+    border: 1px solid var(--accent-line);
+    position: relative;
+    overflow: hidden;
+  }
+  .fase.combo::before {
+    content: 'COMBO';
+    position: absolute;
+    top: 14px;
+    right: -32px;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    padding: 4px 36px;
+    transform: rotate(35deg);
+  }
+  .fase.combo .fase-num { color: var(--accent); }
+  .fase.combo .brinde {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--accent-line);
+  }
+  .fase.combo .brinde-tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .fase.combo .brinde p.lead {
+    font-size: 14.5px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .fase.combo .brinde p.lead strong { font-weight: 600; }
+
+  /* FASES em aberto */
+  .fase.future {
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+  }
+  .fase.future .fase-price { color: var(--text-faint); font-size: 14px; }
+  .fase.future .fase-price .small { display: none; }
+
+  /* CRM showcase */
+  .crm-prova {
+    margin: 22px 0 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 6px 18px rgba(15, 15, 30, 0.08);
+  }
+  .crm-prova img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .crm-prova figcaption {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-faint);
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* O QUE MUDA — versus */
+  .conta {
+    background: var(--card);
+    border: 1px solid var(--accent-line);
+    border-radius: 14px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .conta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .versus { display: grid; gap: 18px; }
+  .versus-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: stretch;
+  }
+  @media (max-width: 600px) {
+    .versus-row { grid-template-columns: 1fr; gap: 8px; }
+    .versus-arrow { display: none; }
+  }
+  .versus-now, .versus-next {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .versus-next { border-color: var(--accent-line); }
+  .versus-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .versus-next .versus-label { color: var(--accent); }
+  .versus-text {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .versus-next .versus-text { color: var(--text); }
+  .versus-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-faint);
+  }
+
+  /* PORTFÓLIO */
+  .port-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .port-link:hover {
+    border-color: var(--accent-line);
+    transform: translateY(-1px);
+  }
+  .port-link-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .port-link-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .port-link-sub {
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+  .port-link-url {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer .sig strong { color: var(--text-dim); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="header">
+    <div class="brand">Proposta — Valhalla</div>
+    <div class="meta">v1 · Maio 2026</div>
+  </header>
+
+  <!-- INTRO -->
+  <div class="intro">
+    <h1>
+      <span class="accent">Site</span> e <span class="accent">loja online</span>.
+    </h1>
+    <p>
+      Proposta dividida em quatro etapas. Vocês começam pelo que faz mais sentido agora e escalam quando quiserem.
+    </p>
+  </div>
+
+  <!-- PROVAS -->
+  <section>
+    <div class="section-label">Cases ao vivo</div>
+    <h2>Para entender mais ou menos como vai ficar.</h2>
+    <div class="provas">
+      <div class="prova">
+        <div class="prova-tag">Referência de design</div>
+        <h3>Necrophos</h3>
+        <p>Estética dark, identidade forte, voltada pra cena. Mostra o tipo de visual que entrego.</p>
+        <a href="https://site-necrophos.vercel.app" target="_blank">site-necrophos.vercel.app ↗</a>
+      </div>
+      <div class="prova">
+        <div class="prova-tag">Referência de loja</div>
+        <h3>Ri Pratas</h3>
+        <p>Loja em produção em Salvador. Catálogo, carrinho, pagamento e gestão funcionando. Vendendo pro Brasil todo.</p>
+        <a href="https://ripratas.com.br" target="_blank">ripratas.com.br ↗</a>
+      </div>
+    </div>
+    <div class="prova-recipe">
+      <strong>Receita do Valhalla:</strong> identidade visual do tipo Necrophos + estrutura de loja do Ri Pratas, customizada pra estética e os produtos da festa.
+    </div>
+  </section>
+
+  <!-- FASES -->
+  <section>
+    <div class="section-label">As fases</div>
+    <h2>O que entra em cada uma.</h2>
+
+    <div class="fase">
+      <div class="fase-head">
+        <div>
+          <div class="fase-num">Fase 1</div>
+          <div class="fase-title">Site Institucional</div>
+        </div>
+        <div class="fase-price">
+          R$ 800
+          <span class="small">1 semana</span>
+        </div>
+      </div>
+      <ul>
+        <li><strong>Página principal com a cara do Valhalla</strong> — cores, logo, fotos, estética que reflete a vibe da festa.</li>
+        <li><strong>Próximo evento em destaque</strong> — data, line-up, local com mapa, regras da casa, valores dos ingressos e link pra onde comprar.</li>
+        <li><strong>Galeria das edições anteriores</strong> — fotos das festas passadas pra mostrar a história e o público.</li>
+        <li><strong>Botões diretos pro Instagram, WhatsApp e redes sociais</strong> — em destaque, sem o cliente ter que procurar.</li>
+        <li><strong>Endereço próprio do tipo valhalla.com.br</strong> — com o cadeado de segurança que aparece no navegador, mostrando pro cliente que o site é confiável.</li>
+        <li><strong>Funciona perfeitamente no celular</strong> — sem zoom, sem layout quebrado. A maior parte do público vai abrir pelo Instagram.</li>
+        <li><strong>Aparece no Google</strong> — quando alguém pesquisar o nome da festa, o site de vocês é o primeiro resultado.</li>
+      </ul>
+    </div>
+
+    <div class="fase">
+      <div class="fase-head">
+        <div>
+          <div class="fase-num">Fase 2</div>
+          <div class="fase-title">Loja Online</div>
+        </div>
+        <div class="fase-price">
+          R$ 3.000
+          <span class="small">2 a 3 semanas</span>
+        </div>
+      </div>
+      <ul>
+        <li><strong>Vitrine de produtos da festa</strong> — camisas, copos, cordões, bonés, kits, o que vocês quiserem. Cada um com fotos, descrição, tamanhos disponíveis e preço.</li>
+        <li><strong>Carrinho de compras</strong> — cliente adiciona vários produtos, vê o total, finaliza tudo de uma vez.</li>
+        <li><strong>Checkout no próprio site</strong> — sem precisar mandar mensagem no WhatsApp pra fechar venda. Tudo automatizado.</li>
+        <li><strong>Pagamento por PIX e cartão de crédito</strong> — PIX cai na conta de vocês em segundos, cartão parcela em até 12x.</li>
+        <li><strong>Confirmação automática do pagamento</strong> — assim que o cliente paga, o pedido entra no sistema pra vocês prepararem. Não precisa ficar conferindo PIX manualmente.</li>
+        <li><strong>Cálculo de frete pelo CEP</strong> — o cliente digita o CEP dele e o sistema calcula o frete na hora pra qualquer lugar do Brasil.</li>
+        <li><strong>Vocês recebem notificação a cada venda</strong> — por e-mail ou WhatsApp.</li>
+        <li><strong>Painel pra gerenciar produtos sozinhos</strong> — cadastrar produto novo, mudar preço, tirar do ar, ajustar estoque, sem precisar me chamar.</li>
+      </ul>
+    </div>
+
+    <div class="fase combo">
+      <div class="fase-head">
+        <div>
+          <div class="fase-num">Combo Fase 1 + Fase 2</div>
+          <div class="fase-title">Site + Loja</div>
+        </div>
+        <div class="fase-price">
+          R$ 3.300
+          <span class="small">economia de R$ 500</span>
+        </div>
+      </div>
+      <ul>
+        <li>Tudo da Fase 1 + Fase 2, entregue de forma integrada.</li>
+      </ul>
+      <div class="brinde">
+        <span class="brinde-tag">+ Brinde no combo</span>
+        <p class="lead"><strong>Painel de gestão completo (CRM)</strong> — o mesmo que tá rodando no Ri Pratas. Vocês acompanham tudo da operação em um único lugar:</p>
+        <ul>
+          <li><strong>Dashboard com gráficos</strong> — vendas do dia, mês, produtos que mais vendem, evolução do faturamento.</li>
+          <li><strong>Lista de pedidos com status</strong> — quem comprou, quem pagou, quem foi enviado, quem recebeu.</li>
+          <li><strong>Cadastro automático de cada cliente</strong> — histórico de compras, ticket médio, contato. Vira base pra remarketing.</li>
+          <li><strong>Funil de vendas tipo Trello</strong> — arrasta cada pedido entre etapas (pago → separação → enviado → entregue).</li>
+          <li><strong>Relatórios financeiros</strong> — quanto entrou, projeção do mês, comparativo com outros meses.</li>
+          <li><strong>Rastreamento de campanhas</strong> — saber qual post do Instagram, story ou anúncio trouxe quais vendas.</li>
+        </ul>
+        <figure class="crm-prova">
+          <img src="assets/crm-produtos.jpeg" alt="Painel de produtos do CRM Ri Pratas — 17 itens cadastrados com fotos, preços e margens" loading="lazy">
+          <figcaption>Painel de produtos rodando hoje no Ri Pratas — captura ao vivo do sistema que vem incluído no combo.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="fase future">
+      <div class="fase-head">
+        <div>
+          <div class="fase-num">Fase 3 — quando fizer sentido</div>
+          <div class="fase-title">Central de Ingressos própria</div>
+        </div>
+        <div class="fase-price">a combinar</div>
+      </div>
+      <ul>
+        <li><strong>Vocês vendem ingresso direto no site do Valhalla</strong> — sem depender de plataforma de terceiros, sem pagar comissão a cada venda.</li>
+        <li><strong>Vocês criam e controlam os lotes</strong> — 1º lote, 2º lote, lote promocional, cortesia. Definem preço, quantidade e data de cada um.</li>
+        <li><strong>Cliente compra e recebe o ingresso na hora</strong> — paga por PIX ou cartão, o sistema confirma o pagamento e envia o ingresso pro e-mail e WhatsApp dele automaticamente.</li>
+        <li><strong>Ingresso com QR Code pro check-in na portaria</strong> — a equipe escaneia o código com o celular na entrada da festa. Acabou ingresso falso, acabou conferência manual.</li>
+        <li><strong>Relatório de vendas em tempo real</strong> — quantos ingressos vendidos, em qual lote, quanto faturou até agora.</li>
+        <li><strong>Métricas de venda por canal</strong> — quando vocês anunciam um DJ novo no Instagram, dá pra acompanhar na hora quantos ingressos aquele post gerou. Saber o que converte e o que não converte.</li>
+      </ul>
+    </div>
+
+    <div class="fase future">
+      <div class="fase-head">
+        <div>
+          <div class="fase-num">Fase 4 — quando fizer sentido</div>
+          <div class="fase-title">Agente IA no WhatsApp 24/7</div>
+        </div>
+        <div class="fase-price">a combinar</div>
+      </div>
+      <ul>
+        <li><strong>Robô inteligente conectado ao WhatsApp da central</strong> — atende qualquer cliente, qualquer hora.</li>
+        <li><strong>Responde dúvidas frequentes na hora</strong> — horário, local, line-up, regras, formas de pagamento, como chegar, política de troca.</li>
+        <li><strong>Leva o cliente pro lugar certo do site</strong> — comprar ingresso, trocar titularidade, pedir reembolso. O site já faz tudo isso sozinho; o agente só direciona.</li>
+        <li><strong>Funciona 24 horas, todo dia</strong> — sem precisar ter alguém de plantão respondendo.</li>
+        <li><strong>Transfere pra um humano nos casos que precisarem de atenção especial</strong> — o robô identifica a situação e passa pro time sem perder o histórico da conversa.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- PORTFÓLIO -->
+  <section>
+    <div class="section-label">Mais projetos</div>
+    <a href="https://izack07-collab.github.io" target="_blank" class="port-link">
+      <div class="port-link-inner">
+        <div class="port-link-text">
+          <div class="port-link-title">Portfólio completo</div>
+          <div class="port-link-sub">Outros sites, lojas, sistemas e integrações que já entreguei.</div>
+        </div>
+        <div class="port-link-url">izack07-collab.github.io ↗</div>
+      </div>
+    </a>
+  </section>
+
+  <footer>
+    <div class="sig">Isaac · <strong>Dev fullstack</strong> · React + Supabase + n8n</div>
+    <div>Proposta válida por 30 dias</div>
+  </footer>
+
+</div>
+</body>
+</html>
